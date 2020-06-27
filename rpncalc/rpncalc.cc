@@ -35,8 +35,7 @@ void rpn::calculator::print(double val) const
 
 static auto skip_blank(std::string_view s) -> std::string_view
 {
-    s.remove_prefix(std::min(s.find_first_not_of(" \t"sv), s.size()));
-    return s;
+    return s.substr(std::min(s.find_first_not_of(" \t"sv), s.size()));
 }
 
 static auto parse_number(std::string_view s)
@@ -48,6 +47,88 @@ static auto parse_number(std::string_view s)
     return { ec == std::errc() ? val
                                : std::numeric_limits<double>::quiet_NaN(),
              s.substr(ptr - first) };
+}
+
+static auto parse_id(std::string_view s)
+    -> std::tuple<std::string, std::string_view>
+{
+    constexpr auto within_id = [](char ch) {
+        switch (ch)
+        {
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+        case 'a':
+        case 'b':
+        case 'c':
+        case 'd':
+        case 'e':
+        case 'f':
+        case 'g':
+        case 'h':
+        case 'i':
+        case 'j':
+        case 'k':
+        case 'l':
+        case 'm':
+        case 'n':
+        case 'o':
+        case 'p':
+        case 'q':
+        case 'r':
+        case 's':
+        case 't':
+        case 'u':
+        case 'v':
+        case 'w':
+        case 'x':
+        case 'y':
+        case 'z':
+        case 'A':
+        case 'B':
+        case 'C':
+        case 'D':
+        case 'E':
+        case 'F':
+        case 'G':
+        case 'H':
+        case 'I':
+        case 'J':
+        case 'K':
+        case 'L':
+        case 'M':
+        case 'N':
+        case 'O':
+        case 'P':
+        case 'Q':
+        case 'R':
+        case 'S':
+        case 'T':
+        case 'U':
+        case 'V':
+        case 'W':
+        case 'X':
+        case 'Y':
+        case 'Z':
+        case '_': return true;
+        default: return false;
+        }
+    };
+
+    auto ed = std::find_if_not(begin(s), end(s), within_id);
+    auto r = std::tuple(""s, ""sv);
+    auto& [tok, rest] = r;
+    tok.resize(std::distance(begin(s), ed));
+    std::copy(begin(s), ed, begin(tok));
+    rest = s.substr(tok.size());
+    return r;
 }
 
 static constexpr bool next_char_is_digit_or_dot(std::string_view s)
@@ -75,8 +156,22 @@ static constexpr bool next_char_is_digit_or_dot(std::string_view s)
 void rpn::calculator::enter(std::string_view line)
 {
     line = skip_blank(line);
-    if (not line.empty())
-        eval(line);
+    if (line.empty())
+        return;
+
+    switch (line.front())
+    {
+    case 'l':
+        if (auto [token, rest] = parse_id(line); token == "let"sv)
+        {
+            if (auto body = skip_blank(rest); body.size() != rest.size())
+                let(body);
+            else
+                error("require spaces after 'let'");
+            break;
+        }
+    default: eval(line);
+    }
 }
 
 void rpn::calculator::eval(std::string_view line)
@@ -148,4 +243,8 @@ void rpn::calculator::eval(std::string_view line)
               },
           },
           runtime_.yield_value());
+}
+
+void rpn::calculator::let(std::string_view body)
+{
 }
