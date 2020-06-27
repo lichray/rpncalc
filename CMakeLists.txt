@@ -19,3 +19,4 @@ set (CMAKE_CXX_STANDARD 20)
 set (CMAKE_CXX_EXTENSIONS OFF)
 
 add_subdirectory ("rpncalc")
+set_directory_properties (PROPERTIES VS_STARTUP_PROJECT rpncalc)

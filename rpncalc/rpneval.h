@@ -19,8 +19,11 @@ class evaluator
 
   public:
     void atom(double val) { stk_.push(val); }
-    auto op(char) -> std::variant<std::monostate, too_few_operands>;
-    auto yield_value() -> std::variant<double, too_few_operators>;
+    [[nodiscard]] auto op(char)
+        -> std::variant<std::monostate, too_few_operands>;
+    [[nodiscard]] auto yield_value()
+        -> std::variant<double, too_few_operators>;
+    void reset() { stk_ = {}; }
 };
 
 }
