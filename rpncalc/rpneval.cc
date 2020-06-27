@@ -2,7 +2,7 @@
 
 #include "rpneval.h"
 
-#include <cassert>
+#include <stdexcept>
 
 auto rpn::evaluator::op(char ch)
     -> std::variant<std::monostate, too_few_operands>
@@ -22,7 +22,7 @@ auto rpn::evaluator::op(char ch)
         case '-': stk_.push(x - y); break;
         case '*': stk_.push(x * y); break;
         case '/': stk_.push(x / y); break;
-        default: assert(false && "unknown operator");
+        default: throw std::invalid_argument{ "unknown operator" };
         }
 
         return std::monostate();
