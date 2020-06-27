@@ -29,6 +29,11 @@ class environment
     }
 
     friend auto end(environment const& env) noexcept { return env.ls_.end(); }
+
+    friend auto size(environment const& env) noexcept
+    {
+        return env.ls_.size();
+    }
 };
 
 }

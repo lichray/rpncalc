@@ -248,22 +248,27 @@ expr:
 
 void rpn::calculator::show() const
 {
-    std::vector<char> buf;
-    if (auto it = std::max_element(
-            begin(env_), end(env_),
-            [](auto& x, auto& y) { return x.name.size() < y.name.size(); });
-        it != end(env_))
-    {
-        buf.resize(it->name.size() + 4, ' ');
-    }
+    auto first = begin(env_);
+    auto last = std::next(first, std::min(size(env_), size_t(10)));
+    auto name_width = [](auto first, auto last) {
+        auto name_less = [](auto& x, auto& y) {
+            return x.name.size() < y.name.size();
+        };
+        return std::max_element(first, last, name_less)->name.size();
+    };
 
-    std::for_each(
-        std::make_reverse_iterator(end(env_)),
-        std::make_reverse_iterator(begin(env_)), [&](variable const& v) {
-            auto it = std::fill_n(std::next(begin(buf)),
-                                  buf.size() - 4 - v.name.size(), ' ');
-            std::copy(begin(v.name), end(v.name), it);
-            write_(buf.data(), buf.size());
-            print(v.val);
-        });
+    if (first == last)
+        return;
+
+    std::for_each(std::make_reverse_iterator(last),
+                  std::make_reverse_iterator(first),
+                  [buf = std::vector(name_width(first, last) + 4, ' '),
+                   this](variable const& v) mutable {
+                      auto& [name, val] = v;
+                      auto it = std::fill_n(std::next(begin(buf)),
+                                            buf.size() - 4 - name.size(), ' ');
+                      std::copy(begin(name), end(name), it);
+                      write_(buf.data(), buf.size());
+                      print(val);
+                  });
 }
