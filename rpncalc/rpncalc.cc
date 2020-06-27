@@ -218,6 +218,19 @@ expr:
         else
             error("invalid number");
         break;
+    case RPN_CCLASS_ID_START: {
+        if (auto [name_to_eval, left] = parse_id(rest);
+            skip_blank(left).empty())
+        {
+            if (auto var = env_[name_to_eval]; var.has_value())
+                env_.set(std::move(name), *var);
+            else
+                error("undefined variable");
+        }
+        else
+            error("unexpected token after 'let' statement");
+        break;
+    }
     default: error("invalid token");
     }
 }
