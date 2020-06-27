@@ -74,21 +74,15 @@ static constexpr bool next_char_is_digit_or_dot(std::string_view s)
 
 void rpn::calculator::enter(std::string_view line)
 {
-    bool has_input = false;
-    for (;; has_input = true)
-    {
-        if (auto rest = skip_blank(line); not rest.empty())
-        {
-            if (has_input and rest.size() == line.size())
-            {
-                error("require spaces between tokens");
-                return runtime_.reset();
-            }
-            line = rest;
-        }
-        else
-            break;
+    line = skip_blank(line);
+    if (not line.empty())
+        eval(line);
+}
 
+void rpn::calculator::eval(std::string_view line)
+{
+    for (;;)
+    {
         switch (auto ch = line.front(); ch)
         {
         case '-':
@@ -131,15 +125,27 @@ void rpn::calculator::enter(std::string_view line)
             break;
         default: error("invalid token"); return runtime_.reset();
         }
+
+        if (auto rest = skip_blank(line); not rest.empty())
+        {
+            if (rest.size() != line.size())
+                line = rest;
+            else
+            {
+                error("require spaces between tokens");
+                return runtime_.reset();
+            }
+        }
+        else
+            break;
     }
 
-    if (has_input)
-        visit(match{
-                  [&](double v) { print(v); },
-                  [&](too_few_operators) {
-                      error("too few operators");
-                      return runtime_.reset();
-                  },
+    visit(match{
+              [&](double v) { print(v); },
+              [&](too_few_operators) {
+                  error("too few operators");
+                  return runtime_.reset();
               },
-              runtime_.yield_value());
+          },
+          runtime_.yield_value());
 }

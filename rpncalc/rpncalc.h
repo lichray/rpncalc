@@ -18,6 +18,8 @@ class calculator
     void error(std::string_view msg) const;
     void print(double) const;
 
+    void eval(std::string_view expr);
+
   public:
     explicit calculator(std::function<write_sig> fn) : write_(std::move(fn)) {}
     void enter(std::string_view line);
