@@ -2,14 +2,17 @@
 
 void rpn::environment::set(std::string&& name, double val)
 {
-    tbl_.insert_or_assign(std::move(name), val);
+    if (auto it = tbl_.find(name); it != tbl_.end())
+        *it->second = val;
+    else
+        tbl_.emplace(std::move(name), ls_.emplace(end(), val));
 }
 
 auto rpn::environment::operator[](std::string const& name) const
     -> std::optional<double>
 {
-    if (auto it = tbl_.find(name); it != end(tbl_))
-        return it->second;
+    if (auto it = tbl_.find(name); it != tbl_.end())
+        return *it->second;
     else
         return std::nullopt;
 }
