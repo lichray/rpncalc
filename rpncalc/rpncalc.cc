@@ -4,6 +4,7 @@
 #include <charconv>
 #include <algorithm>
 #include <vector>
+#include <iterator>
 #include <tuple>
 #include <limits>
 #include <ciso646>
@@ -256,12 +257,13 @@ void rpn::calculator::show() const
         buf.resize(it->name.size() + 4, ' ');
     }
 
-    for (auto&& [name, val] : env_)
-    {
-        auto it = std::fill_n(std::next(begin(buf)),
-                              buf.size() - 4 - name.size(), ' ');
-        std::copy(begin(name), end(name), it);
-        write_(buf.data(), buf.size());
-        print(val);
-    }
+    std::for_each(
+        std::make_reverse_iterator(end(env_)),
+        std::make_reverse_iterator(begin(env_)), [&](variable const& v) {
+            auto it = std::fill_n(std::next(begin(buf)),
+                                  buf.size() - 4 - v.name.size(), ' ');
+            std::copy(begin(v.name), end(v.name), it);
+            write_(buf.data(), buf.size());
+            print(v.val);
+        });
 }
