@@ -8,17 +8,27 @@
 namespace rpn
 {
 
+struct variable
+{
+    std::string name;
+    double val;
+};
+
 class environment
 {
-    std::list<double> ls_;
-    std::unordered_map<std::string, decltype(ls_.begin())> tbl_;
+    std::list<variable> ls_;
+    std::unordered_map<std::string_view, decltype(ls_.begin())> tbl_;
 
   public:
     void set(std::string&& name, double val);
-    auto operator[](std::string const& name) const -> std::optional<double>;
+    auto operator[](std::string_view name) const -> std::optional<double>;
 
-    auto begin() const noexcept { return ls_.begin(); }
-    auto end() const noexcept { return ls_.end(); }
+    friend auto begin(environment const& env) noexcept
+    {
+        return env.ls_.begin();
+    }
+
+    friend auto end(environment const& env) noexcept { return env.ls_.end(); }
 };
 
 }

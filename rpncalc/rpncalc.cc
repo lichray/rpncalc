@@ -3,6 +3,7 @@
 
 #include <charconv>
 #include <algorithm>
+#include <vector>
 #include <tuple>
 #include <limits>
 #include <ciso646>
@@ -246,4 +247,21 @@ expr:
 
 void rpn::calculator::show() const
 {
+    std::vector<char> buf;
+    if (auto it = std::max_element(
+            begin(env_), end(env_),
+            [](auto& x, auto& y) { return x.name.size() < y.name.size(); });
+        it != end(env_))
+    {
+        buf.resize(it->name.size() + 4, ' ');
+    }
+
+    for (auto&& [name, val] : env_)
+    {
+        auto it = std::fill_n(std::next(begin(buf)),
+                              buf.size() - 4 - name.size(), ' ');
+        std::copy(begin(name), end(name), it);
+        write_(buf.data(), buf.size());
+        print(val);
+    }
 }
