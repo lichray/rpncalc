@@ -127,6 +127,20 @@ void rpn::calculator::eval(std::string_view line)
                 return runtime_.reset();
             }
             break;
+        case RPN_CCLASS_ID_START: {
+            auto [name, rest] = parse_id(line);
+            if (auto var = env_[name]; var.has_value())
+            {
+                runtime_.atom(*var);
+                line = rest;
+            }
+            else
+            {
+                error("undefined variable");
+                return runtime_.reset();
+            }
+            break;
+        }
         default: error("invalid token"); return runtime_.reset();
         }
 
@@ -145,7 +159,10 @@ void rpn::calculator::eval(std::string_view line)
     }
 
     visit(match{
-              [&](double v) { print(v); },
+              [&](double v) {
+                  print(v);
+                  env_.set("ans", v);
+              },
               [&](too_few_operators) {
                   error("too few operators");
                   return runtime_.reset();
