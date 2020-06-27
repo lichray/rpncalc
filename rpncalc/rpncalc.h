@@ -22,6 +22,7 @@ class calculator
 
     void eval(std::string_view expr);
     void let(std::string_view body);
+    void show() const;
 
   public:
     explicit calculator(std::function<write_sig> fn) : write_(std::move(fn)) {}

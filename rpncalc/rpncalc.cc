@@ -88,6 +88,15 @@ void rpn::calculator::enter(std::string_view line)
                 error("require spaces after 'let'");
             break;
         }
+    case 's':
+        if (auto [token, rest] = parse_id(line); token == "show"sv)
+        {
+            if (skip_blank(rest).empty())
+                show();
+            else
+                error("unexpected token after 'show' statement");
+            break;
+        }
     default: eval(line);
     }
 }
@@ -233,4 +242,8 @@ expr:
     }
     default: error("invalid token");
     }
+}
+
+void rpn::calculator::show() const
+{
 }
