@@ -4,6 +4,7 @@
 #include <functional>
 
 #include "rpneval.h"
+#include "rpnenv.h"
 
 namespace rpn
 {
@@ -14,6 +15,7 @@ class calculator
 
     std::function<write_sig> write_;
     evaluator runtime_;
+    environment env_;
 
     void error(std::string_view msg) const;
     void print(double) const;
