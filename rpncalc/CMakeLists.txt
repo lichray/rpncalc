@@ -1,3 +1,3 @@
 ﻿cmake_minimum_required (VERSION 3.15)
 
-add_executable (rpncalc "rpncalc.cc" "rpncalc.h" "main.cc" "rpneval.h" "rpneval.cc" "rpnenv.h" "rpnenv.cc")
+add_executable (rpncalc "rpncalc.cc" "rpncalc.h" "main.cc" "rpneval.h" "rpneval.cc" "rpnenv.h" "rpnenv.cc" "rpncclass.h")
