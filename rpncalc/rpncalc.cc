@@ -156,4 +156,51 @@ void rpn::calculator::eval(std::string_view line)
 
 void rpn::calculator::let(std::string_view body)
 {
+    if (body.empty())
+        return error("expect variable name after 'let'");
+
+    auto name = ""s;
+    auto rest = ""sv;
+
+    switch (body.front())
+    {
+    case RPN_CCLASS_ID_START: {
+        std::tie(name, rest) = parse_id(body);
+        if (auto left = skip_blank(rest); not left.empty())
+        {
+            if (left.size() != rest.size())
+            {
+                rest = left;
+                goto expr;
+            }
+            else
+                error("require spaces after variable name");
+        }
+        else
+            error("expect number after variable name");
+        break;
+    }
+    default: error("invalid token");
+    }
+
+    return;
+
+expr:
+    switch (rest.front())
+    {
+    case '-':
+    case RPN_CCLASS_DIGIT:
+    case '.':
+        if (auto [val, left] = parse_number(rest); left.size() != rest.size())
+        {
+            if (skip_blank(left).empty())
+                env_.set(std::move(name), val);
+            else
+                error("unexpected token after 'let' statement");
+        }
+        else
+            error("invalid number");
+        break;
+    default: error("invalid token");
+    }
 }
