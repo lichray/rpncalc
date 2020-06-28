@@ -7,6 +7,7 @@
 #include <iterator>
 #include <tuple>
 #include <limits>
+#include <cmath>
 #include <ciso646>
 
 using namespace std::literals;
@@ -129,8 +130,16 @@ void rpn::calculator::eval(std::string_view line)
             if (auto [val, rest] = parse_number(line);
                 rest.size() != line.size())
             {
-                runtime_.atom(val);
-                line = rest;
+                if (std::isfinite(val))
+                {
+                    runtime_.atom(val);
+                    line = rest;
+                }
+                else
+                {
+                    error("unrepresentable number");
+                    return runtime_.reset();
+                }
             }
             else
             {
@@ -224,7 +233,12 @@ expr:
         if (auto [val, left] = parse_number(rest); left.size() != rest.size())
         {
             if (skip_blank(left).empty())
-                env_.set(std::move(name), val);
+            {
+                if (std::isfinite(val))
+                    env_.set(std::move(name), val);
+                else
+                    error("unrepresentable number");
+            }
             else
                 error("unexpected token after 'let' statement");
         }
