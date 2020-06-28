@@ -147,7 +147,8 @@ void rpn::calculator::eval(std::string_view line)
                 return runtime_.reset();
             }
             break;
-        case RPN_CCLASS_ID_START: {
+        case RPN_CCLASS_ID_START:
+        {
             auto [name, rest] = parse_id(line);
             if (auto var = env_[name]; var.has_value())
             {
@@ -201,7 +202,8 @@ void rpn::calculator::let(std::string_view body)
 
     switch (body.front())
     {
-    case RPN_CCLASS_ID_START: {
+    case RPN_CCLASS_ID_START:
+    {
         std::tie(name, rest) = parse_id(body);
         if (auto left = skip_blank(rest); not left.empty())
         {
@@ -245,7 +247,8 @@ expr:
         else
             error("invalid number");
         break;
-    case RPN_CCLASS_ID_START: {
+    case RPN_CCLASS_ID_START:
+    {
         if (auto [name_to_eval, left] = parse_id(rest);
             skip_blank(left).empty())
         {
