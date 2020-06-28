@@ -2,7 +2,7 @@
 
 #include <string>
 #include <optional>
-#include <unordered_map>
+#include <vector>
 #include <list>
 
 namespace rpn
@@ -17,7 +17,16 @@ struct variable
 class environment
 {
     std::list<variable> ls_;
-    std::unordered_map<std::string_view, decltype(ls_.begin())> tbl_;
+
+    struct entry
+    {
+        std::string_view term;
+        decltype(ls_.begin()) link;
+    };
+    std::vector<entry> idx_;
+
+    auto lower_bound(std::string_view name) const noexcept
+        -> decltype(idx_.cbegin());
 
   public:
     void set(std::string&& name, double val);
