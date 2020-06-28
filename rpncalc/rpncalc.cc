@@ -269,8 +269,8 @@ expr:
 
 void rpn::calculator::show() const
 {
-    auto first = begin(env_);
-    auto last = std::next(first, std::min(size(env_), size_t(10)));
+    auto last = std::make_reverse_iterator(begin(env_));
+    auto first = std::prev(last, std::min<size_t>(size(env_), 10));
     auto name_width = [](auto first, auto last) {
         auto name_less = [](auto& x, auto& y) {
             return x.name.size() < y.name.size();
@@ -281,8 +281,7 @@ void rpn::calculator::show() const
     if (first == last)
         return;
 
-    std::for_each(std::make_reverse_iterator(last),
-                  std::make_reverse_iterator(first),
+    std::for_each(first, last,
                   [buf = std::vector(name_width(first, last) + 4, ' '),
                    this](variable const& v) mutable {
                       auto& [name, val] = v;

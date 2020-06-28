@@ -32,12 +32,11 @@ class environment
     void set(std::string&& name, double val);
     auto operator[](std::string_view name) const -> std::optional<double>;
 
-    friend auto begin(environment const& env) noexcept
-    {
-        return env.ls_.begin();
-    }
+    auto begin() const noexcept { return ls_.begin(); }
+    auto end() const noexcept { return ls_.end(); }
 
-    friend auto end(environment const& env) noexcept { return env.ls_.end(); }
+    friend auto begin(environment const& env) noexcept { return env.begin(); }
+    friend auto end(environment const& env) noexcept { return env.end(); }
 
     friend auto size(environment const& env) noexcept
     {

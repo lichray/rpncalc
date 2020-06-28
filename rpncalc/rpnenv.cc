@@ -15,13 +15,13 @@ void rpn::environment::set(std::string&& name, double val)
 {
     if (auto it = lower_bound(name); it != idx_.end() and it->term == name)
     {
-        ls_.splice(begin(*this), ls_, it->link);
+        ls_.splice(begin(), ls_, it->link);
         it->link->val = val;
     }
     else
     {
         auto pos =
-            ls_.insert(begin(*this), { .name = std::move(name), .val = val });
+            ls_.insert(begin(), { .name = std::move(name), .val = val });
         idx_.insert(it, { .term = pos->name, .link = pos });
     }
 }
