@@ -49,8 +49,8 @@ static auto parse_number(std::string_view s)
     double val;
     auto first = std::to_address(begin(s));
     auto [ptr, ec] = std::from_chars(first, std::to_address(end(s)), val);
-    return { ec == std::errc() ? val : traits::quiet_NaN(),
-             s.substr(ptr - first) };
+    return std::tuple(ec == std::errc() ? val : traits::quiet_NaN(),
+                      s.substr(ptr - first));
 }
 
 static auto parse_id(std::string_view s)
