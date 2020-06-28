@@ -217,6 +217,8 @@ expr:
     switch (rest.front())
     {
     case '-':
+        if (not next_char_is_digit_or_dot(rest.substr(1)))
+            goto invalid_token;
     case RPN_CCLASS_DIGIT:
     case '.':
         if (auto [val, left] = parse_number(rest); left.size() != rest.size())
@@ -242,7 +244,9 @@ expr:
             error("unexpected token after 'let' statement");
         break;
     }
-    default: error("invalid token");
+    default:
+    invalid_token:
+        error("invalid token");
     }
 }
 
