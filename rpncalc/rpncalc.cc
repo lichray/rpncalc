@@ -45,11 +45,11 @@ static auto skip_blank(std::string_view s) -> std::string_view
 static auto parse_number(std::string_view s)
     -> std::tuple<double, std::string_view>
 {
+    using traits = std::numeric_limits<double>;
     double val;
     auto first = std::to_address(begin(s));
     auto [ptr, ec] = std::from_chars(first, std::to_address(end(s)), val);
-    return { ec == std::errc() ? val
-                               : std::numeric_limits<double>::quiet_NaN(),
+    return { ec == std::errc() ? val : traits::quiet_NaN(),
              s.substr(ptr - first) };
 }
 
