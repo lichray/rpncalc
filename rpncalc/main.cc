@@ -3,11 +3,13 @@
 #include <functional>
 
 #include "rpncalc.h"
+#include "rpncon.h"
 
 int main()
 {
     std::string input;
-    rpn::calculator calc(std::bind_front(&std::ostream::write, &std::cout));
+    rpn::console con(stdout);
+    rpn::calculator calc(std::bind_front(&rpn::console::write, &con));
 
     while (std::cout << "   ", getline(std::cin, input))
         calc.enter(input);
