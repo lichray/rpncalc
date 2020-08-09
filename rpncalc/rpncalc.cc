@@ -91,6 +91,7 @@ void rpn::calculator::enter(std::string_view line)
                 error("require spaces after 'let'");
             break;
         }
+        [[fallthrough]];
     case 's':
         if (auto [token, rest] = parse_id(line); token == "show"sv)
         {
@@ -100,6 +101,7 @@ void rpn::calculator::enter(std::string_view line)
                 error("unexpected token after 'show' statement");
             break;
         }
+        [[fallthrough]];
     default: eval(line);
     }
 }
@@ -113,6 +115,7 @@ void rpn::calculator::eval(std::string_view line)
         case '-':
             if (next_char_is_digit_or_dot(line.substr(1)))
                 goto number;
+            [[fallthrough]];
         case '+':
         case '*':
         case '/':
@@ -230,6 +233,7 @@ expr:
     case '-':
         if (not next_char_is_digit_or_dot(rest.substr(1)))
             goto invalid_token;
+        [[fallthrough]];
     case RPN_CCLASS_DIGIT:
     case '.':
         if (auto [val, left] = parse_number(rest); left.size() != rest.size())
